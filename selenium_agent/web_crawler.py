@@ -5,7 +5,7 @@ import datetime
 
 
 class WebCrawler:
-    def __init__(self, driver='remote'):
+    def __init__(self, driver=None):
         self.option = webdriver.ChromeOptions()
         self.option.add_argument("-incognito")
         self.order_url = 'https://docs.google.com/forms/d/e/1FAIpQLSe5jxs_7rCkhvqSDzUdInJs_cYsiEmzlOzFw7Q4p8KwJncP4A/viewform?pli=1&fbzx=-715767029344563818'
@@ -86,7 +86,7 @@ class WebCrawler:
                 By.XPATH,
                 '//*[@id="mG61Hd"]/div[2]/div/div[2]/div[2]/div/div//span[@class="aDTYNe snByac OvPDhc OIC90c"]'
             )
-
+            time.sleep(10)
             for item in items:
                 meals.append(f'{supplier}-{item.text}')
             driver.quit()
@@ -95,7 +95,7 @@ class WebCrawler:
 
 
 def main():
-    web_crawler = WebCrawler(driver='remote')
+    web_crawler = WebCrawler()
     meals = web_crawler.get_menu()
     print(meals)
 
