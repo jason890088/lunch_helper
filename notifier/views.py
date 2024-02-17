@@ -13,6 +13,7 @@ line_bot_api = LineBotApi(settings.LINE_CHANNEL_ACCESS_TOKEN)
 parser = WebhookParser(settings.LINE_CHANNEL_SECRET)
 
 
+# 測試用view
 @csrf_exempt
 def callback(request):
     if request.method == 'POST':

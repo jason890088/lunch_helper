@@ -23,8 +23,8 @@ def debug_task(self):
 
 
 app.conf.beat_schedule = {
-    'notify-5-seconds': {
+    'notify-daily-first-broadcast': {
         'task': 'notifier.tasks.send_daily_notify',
-        'schedule': 5,
+        'schedule': crontab(hour=8, minute=30),
     },
 }
