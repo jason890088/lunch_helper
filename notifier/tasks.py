@@ -2,7 +2,7 @@ from celery import shared_task
 from linebot import LineBotApi
 from django.conf import settings
 from linebot.models import TextSendMessage
-from selenium_agent.web_crawler import WebCrawler
+from selenium_agent.web_crawler import WebCrawler, get_ordered_list
 from account_manager.models import Person
 
 line_bot_api = LineBotApi(settings.LINE_CHANNEL_ACCESS_TOKEN)
@@ -21,9 +21,9 @@ def send_daily_menu():
 
 @shared_task
 def send_order_notify():
-    order_list = ['a', 'b']
+    ordered_list = get_ordered_list()
     for person in Person.objects.all():
-        if person.name not in order_list:
+        if person.name not in ordered_list:
             line_bot_api.push_message(
                 person.line_user_id,
                 TextSendMessage(

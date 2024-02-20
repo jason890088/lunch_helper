@@ -1,7 +1,7 @@
 from selenium import webdriver
 import time
 from selenium.webdriver.common.by import By
-import datetime
+import pygsheets
 
 
 class WebCrawler:
@@ -92,6 +92,15 @@ class WebCrawler:
             driver.quit()
 
         return meals
+
+
+def get_ordered_list():
+    # 將權證放入 service_account_file
+    google_client = pygsheets.authorize(service_account_file='jason-test-414608-ac2989175ce5.json')
+    url = 'https://docs.google.com/spreadsheets/d/109aWZaPfGXen7xhGnC6ISC-7Sauj8GemuTZ8infwdlw/edit#gid=898178581'
+    sheet = google_client.open_by_url(url)
+    worksheet = sheet.worksheet_by_title("表單回應 1").get_as_df()
+    return worksheet['您的名字'].to_list()
 
 
 def main():
