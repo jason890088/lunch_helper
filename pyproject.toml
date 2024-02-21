@@ -17,6 +17,7 @@ python-dotenv = "^1.0.1"
 selenium = "^4.17.2"
 pygsheets = "^2.0.6"
 pandas = "^2.2.0"
+gunicorn = "^21.2.0"
 
 
 [build-system]
