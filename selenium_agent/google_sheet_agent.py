@@ -1,5 +1,6 @@
 import pygsheets
 from dotenv import load_dotenv
+from datetime import date, timedelta, datetime
 
 
 def get_ordered_list():
@@ -9,7 +10,25 @@ def get_ordered_list():
     url = 'https://docs.google.com/spreadsheets/d/109aWZaPfGXen7xhGnC6ISC-7Sauj8GemuTZ8infwdlw/edit#gid=898178581'
     sheet = google_client.open_by_url(url)
     worksheet = sheet.worksheet_by_title("表單回應 1").get_as_df()
-    return worksheet['您的名字'].to_list()
+    user_list = []
+    # google sheet有折疊,需要另外過濾已折疊資料
+    for idx, row in worksheet.iterrows():
+        user_datetime = row['時間戳記']
+        if time_filter(user_datetime):
+            user_list.append(row['您的名字'])
+    return user_list
+
+
+def time_filter(user_datetime):
+    user_date = datetime.strptime(user_datetime.split(' ')[0], "%Y/%m/%d").date()
+    time_range = user_datetime.split(' ')[1]
+    today = date.today()
+    if user_date == (today - timedelta(days=1)) and time_range == '下午':
+        return True
+    elif user_date == today and time_range == '上午':
+        return True
+    else:
+        return False
 
 
 def main():
