@@ -29,6 +29,6 @@ app.conf.beat_schedule = {
     },
     'notify-check-order': {
         'task': 'notifier.tasks.send_order_notify',
-        'schedule': crontab(hour=9, minute=00),
+        'schedule': crontab(hour=9, minute=00, day_of_week='mon,tue,wed,thu,fri'),
     },
 }
