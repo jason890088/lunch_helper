@@ -1,13 +1,11 @@
 from django.conf import settings
-from django.http import HttpResponse, HttpResponseBadRequest, HttpRequest, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseBadRequest, HttpRequest
 from django.views.decorators.csrf import csrf_exempt
-from django.forms.models import model_to_dict
 from linebot import LineBotApi, WebhookParser, WebhookHandler
-from linebot.exceptions import  LineBotApiError
+from linebot.exceptions import LineBotApiError
 from linebot.models import MessageEvent, TextSendMessage, TextMessage
 from account_manager.utils import register, get_user_info
 from selenium_agent.web_crawler import WebCrawler
-from account_manager.models import Person
 
 line_bot_api = LineBotApi(settings.LINE_CHANNEL_ACCESS_TOKEN)
 parser = WebhookParser(settings.LINE_CHANNEL_SECRET)
@@ -89,10 +87,10 @@ def bind_account(event: MessageEvent):
 def check_order_and_user_info(event: MessageEvent):
     error_code = 0
     try:
-        p = model_to_dict(get_user_info(event.source.user_id))
-        user_info = (f'姓名:{p["name"]}\n'
-                     f'工號:{p["employee_id"]}\n'
-                     f'法人:{p["corporation"]}')
+        user_info = get_user_info(event.source.user_id)
+        user_info = (f'姓名:{user_info.name}\n'
+                     f'工號:{user_info.employee_id}\n'
+                     f'法人:{user_info.corporation}')
     except Exception as e:
         print(e)
         return 1, None
@@ -100,7 +98,7 @@ def check_order_and_user_info(event: MessageEvent):
 
 
 def order(event: MessageEvent):
-    user_info = Person.objects.get(line_user_id=event.source.user_id)
+    user_info = get_user_info(event.source.user_id)
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(
