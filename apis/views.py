@@ -1,13 +1,13 @@
-from django.shortcuts import render
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseBadRequest, HttpRequest, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.forms.models import model_to_dict
 from linebot import LineBotApi, WebhookParser, WebhookHandler
-from linebot.exceptions import InvalidSignatureError, LineBotApiError
+from linebot.exceptions import  LineBotApiError
 from linebot.models import MessageEvent, TextSendMessage, TextMessage
 from account_manager.utils import register, get_user_info
 from selenium_agent.web_crawler import WebCrawler
+from account_manager.models import Person
 
 line_bot_api = LineBotApi(settings.LINE_CHANNEL_ACCESS_TOKEN)
 parser = WebhookParser(settings.LINE_CHANNEL_SECRET)
@@ -55,7 +55,7 @@ def message_text(event: MessageEvent):
             else:
                 reply_msg = f'帳號尚未綁定,請進行綁定'
         case "@聯絡管理員":
-            reply_msg = f"哩賀 哇細Jason直接來座位找我吧"
+            reply_msg = f"哩賀 哇系Jason直接來座位找我吧"
         case _:
             reply_msg = f'訊息格式錯誤，請聯絡管理員'
     if reply_msg:
@@ -100,15 +100,9 @@ def check_order_and_user_info(event: MessageEvent):
 
 
 def order(event: MessageEvent):
-    meals = web_crawler.get_menu()
-    reply_msg = ''
-    for meal in meals:
-        reply_msg += f'{meal}\n'
+    user_info = Person.objects.get(line_user_id=event.source.user_id)
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=reply_msg)
-    )
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text='Jason')
+        TextSendMessage(
+            text=f'https://docs.google.com/forms/d/e/1FAIpQLSe5jxs_7rCkhvqSDzUdInJs_cYsiEmzlOzFw7Q4p8KwJncP4A/viewform?entry.622012142={user_info.name}&entry.2113777701={user_info.employee_id}&entry.1062405129={user_info.corporation}')
     )
